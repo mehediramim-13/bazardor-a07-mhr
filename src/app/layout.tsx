@@ -37,7 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-theme="light"
       className={`${geistSans.variable} ${hindSiliguri.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-[#F0F5F0]">
+      <body className={`${hindSiliguri.variable} font-sans flex min-h-screen flex-col bg-[#F0F5F0]`}>
         
      <Header></Header>
      <Nav></Nav>

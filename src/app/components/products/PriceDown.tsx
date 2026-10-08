@@ -29,7 +29,7 @@ const bnPct = (n: number) =>
 
 const PriceDown = async () => {
   const res = await fetch(
-    "https://api.api-store.workers.dev/api/bazardor/products"
+    "https://api.abcz.workers.dev/api/bazardor/products"
   );
   const data: Product[] = await res.json();
 
@@ -42,7 +42,7 @@ const PriceDown = async () => {
   const items = down.filter((p) => top.includes(p));
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-6">
+    <section className="mx-auto container px-4 py-6 bg-[#F0F5F0]">
       <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-gray-900">
         <span className="text-lg text-green-600">▼</span>
         আজ দাম কমেছে
@@ -73,9 +73,9 @@ const PriceDown = async () => {
               <p className="text-gray-900">
                 <span className="text-2xl font-bold">{bn(p.today)}</span> টাকা
               </p>
-              <span className="rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-600">
-                ▼ {bnPct(Math.abs(p.change.pct))}%
-              </span>
+              <span className="rounded-full bg-green-50 px-3 py-1 text-sm font-semibold text-green-600">
+  ▼ {bnPct(Math.abs(p.change.pct))}%
+</span>
             </div>
           </div>
         ))}

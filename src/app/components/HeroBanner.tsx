@@ -5,7 +5,7 @@ import TodayDate from "./TodayDate";
 
 const HeroBanner = () => {
   return (
-    <section className="mx-auto my-10 max-w-7xl px-4">
+    <section className="mx-auto my-10 max-w-7xl px-4 bg-[#F0F5F0]">
       <div className="flex flex-col-reverse items-center justify-between gap-8 rounded-[2rem] border border-gray-200 bg-[#fbfdfb] px-6 py-10 md:flex-row md:px-7 md:py-12">
         <div className="max-w-2xl">
           <Suspense

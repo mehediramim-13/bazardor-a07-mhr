@@ -29,7 +29,7 @@ const bnPct = (n: number) =>
 
 const PriceUp = async () => {
   const res = await fetch(
-    "https://api.api-store.workers.dev/api/bazardor/products"
+    "https://api.abcz.workers.dev/api/bazardor/products"
   );
   const data: Product[] = await res.json();
 
@@ -39,7 +39,7 @@ const PriceUp = async () => {
     .slice(0, 6);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-6">
+    <section className="mx-auto container px-4 py-6 bg-[#F0F5F0]">
       <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-gray-900">
         <span className="text-lg text-red-600">▲</span>
         আজ দাম বেড়েছে
