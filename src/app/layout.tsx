@@ -34,8 +34,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="bn"
+      data-scroll-behavior="smooth"
       data-theme="light"
-      className={`${geistSans.variable} ${hindSiliguri.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${hindSiliguri.variable} h-full antialiased scroll-smooth`}
     >
       <body className={`${hindSiliguri.variable} font-sans flex min-h-screen flex-col bg-[#F0F5F0]`}>
         
