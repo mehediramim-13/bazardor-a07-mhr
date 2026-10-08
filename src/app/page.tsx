@@ -1,6 +1,7 @@
 import Marquee from "./components/Marquee";
 import HeroBanner from "./components/HeroBanner";
 import PriceUp from "./components/products/PriceUp";
+import PriceDown from "./components/products/PriceDown";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <Marquee></Marquee>
       <HeroBanner></HeroBanner>
       <PriceUp></PriceUp>
+      <PriceDown></PriceDown>
     </div>
   );
 }
