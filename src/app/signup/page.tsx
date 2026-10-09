@@ -70,6 +70,12 @@ const SignUpPage = () => {
     }
   };
 
+   const handleGoogleSignUp = async() => {
+     const data = await authClient.signIn.social({
+      provider: "google",
+    });
+   };
+
   return (
     <div className="container mx-auto px-4 py-10">
       <div className="text-center">
@@ -178,7 +184,7 @@ const SignUpPage = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-3 min-[440px]:grid-cols-2">
-          <button type="button" className={socialBtn}>
+          <button type="button" className={socialBtn} onClick={handleGoogleSignUp}>
             <svg
               aria-label="Google logo"
               width="16"
