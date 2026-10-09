@@ -76,6 +76,12 @@ const SignUpPage = () => {
     });
    };
 
+      const handleGithubSignUp = async() => {
+     const data = await authClient.signIn.social({
+      provider: "github",
+    });
+   };
+
   return (
     <div className="container mx-auto px-4 py-10">
       <div className="text-center">
@@ -216,7 +222,7 @@ const SignUpPage = () => {
             Google দিয়ে চালিয়ে যান
           </button>
 
-          <button type="button" className={socialBtn}>
+          <button type="button" className={socialBtn} onClick={handleGithubSignUp}>
             <svg
               aria-label="GitHub logo"
               width="16"
