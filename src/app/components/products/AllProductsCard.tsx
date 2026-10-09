@@ -11,7 +11,7 @@ export interface Product {
   change: { dir: string; pct: number };
 }
 
-const UNIT_BN: Record<string, string> = {
+const UNIT_LABELS: Record<string, string> = {
   kg: "কেজি",
   dozen: "ডজন",
   litre: "লিটার",
@@ -29,44 +29,44 @@ const SORT_OPTIONS = [
   { value: "fall", label: "দাম বেশি কমেছে" },
 ];
 
-const bn = (n: number) => Number(n).toLocaleString("bn-BD");
+const CHANGE_STYLES = {
+  up: { arrow: "▲", colors: "bg-red-50 text-red-700" },
+  down: { arrow: "▼", colors: "bg-green-50 text-green-700" },
+  flat: { arrow: "—", colors: "bg-gray-100 text-gray-600" },
+};
 
-const bnPct = (n: number) =>
-  Number(n).toLocaleString("bn-BD", {
+const toBanglaNumber = (value: number) => Number(value).toLocaleString("bn-BD");
+
+const toBanglaPercent = (value: number) =>
+  Number(value).toLocaleString("bn-BD", {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
 
-const signedPct = (p: Product) => {
-  const v = Math.abs(p.change?.pct ?? 0);
-  if (p.change?.dir === "up") return v;
-  if (p.change?.dir === "down") return -v;
+const getSignedChange = (product: Product) => {
+  const percent = Math.abs(product.change?.pct ?? 0);
+  if (product.change?.dir === "up") return percent;
+  if (product.change?.dir === "down") return -percent;
   return 0;
 };
 
-const Badge = ({ product }: { product: Product }) => {
-  const dir = product.change?.dir;
-  const pct = Math.abs(product.change?.pct ?? 0);
+const PriceChange = ({ product }: { product: Product }) => {
+  const direction = product.change?.dir;
+  const percent = Math.abs(product.change?.pct ?? 0);
 
-  if (dir === "up") {
-    return (
-      <span className="rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-red-600">
-        ▲ {bnPct(pct)}%
-      </span>
-    );
-  }
-
-  if (dir === "down") {
-    return (
-      <span className="rounded-full bg-green-50 px-3 py-1 text-sm font-semibold text-green-700">
-        ▼ {bnPct(pct)}%
-      </span>
-    );
-  }
+  const style =
+    direction === "up"
+      ? CHANGE_STYLES.up
+      : direction === "down"
+        ? CHANGE_STYLES.down
+        : CHANGE_STYLES.flat;
 
   return (
-    <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-600">
-      — {bnPct(pct)}%
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[15px] font-medium font-[family-name:var(--font-noto-bengali)] ${style.colors}`}
+    >
+      <span className="text-[10px]">{style.arrow}</span>
+      {toBanglaPercent(percent)}%
     </span>
   );
 };
@@ -78,23 +78,24 @@ const AllProducts = ({
   products: Product[];
   showTitle?: boolean;
 }) => {
-  const [sort, setSort] = useState("default");
+  const [sortBy, setSortBy] = useState("default");
 
-  const items = useMemo(() => {
-    const list = [...products];
-    switch (sort) {
+  const sortedProducts = useMemo(() => {
+    const productList = [...products];
+
+    switch (sortBy) {
       case "price-asc":
-        return list.sort((a, b) => a.today - b.today);
+        return productList.sort((a, b) => a.today - b.today);
       case "price-desc":
-        return list.sort((a, b) => b.today - a.today);
+        return productList.sort((a, b) => b.today - a.today);
       case "rise":
-        return list.sort((a, b) => signedPct(b) - signedPct(a));
+        return productList.sort((a, b) => getSignedChange(b) - getSignedChange(a));
       case "fall":
-        return list.sort((a, b) => signedPct(a) - signedPct(b));
+        return productList.sort((a, b) => getSignedChange(a) - getSignedChange(b));
       default:
-        return list;
+        return productList;
     }
-  }, [products, sort]);
+  }, [products, sortBy]);
 
   return (
     <section id="all-products" className="container mx-auto scroll-mt-6 px-4 py-6">
@@ -104,19 +105,19 @@ const AllProducts = ({
 
       <div className="mb-4 mt-3 flex items-center justify-between gap-3">
         <p className="text-gray-600">
-          মোট {bn(items.length)}টি পণ্য দেখানো হচ্ছে
+          মোট {toBanglaNumber(sortedProducts.length)}টি পণ্য দেখানো হচ্ছে
         </p>
 
         <label className="flex items-center gap-2 text-gray-600">
           সাজান
           <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
+            value={sortBy}
+            onChange={(event) => setSortBy(event.target.value)}
             className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 outline-none focus:border-green-600"
           >
-            {SORT_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
               </option>
             ))}
           </select>
@@ -124,21 +125,21 @@ const AllProducts = ({
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((p) => (
+        {sortedProducts.map((product) => (
           <div
-            key={p.id}
+            key={product.id}
             className="rounded-2xl border border-gray-200 bg-[#FAFCFA] p-4"
           >
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-2xl">
-                {p.image}
+                {product.image}
               </div>
               <div>
                 <h3 className="text-lg font-bold leading-tight text-gray-900">
-                  {p.nameBn}
+                  {product.nameBn}
                 </h3>
                 <p className="text-xs text-gray-500">
-                  প্রতি {UNIT_BN[p.unit] ?? p.unit}
+                  প্রতি {UNIT_LABELS[product.unit] ?? product.unit}
                 </p>
               </div>
             </div>
@@ -146,9 +147,12 @@ const AllProducts = ({
             <p className="mt-3 text-xs text-gray-500">আজকের দাম</p>
             <div className="flex items-center justify-between">
               <p className="text-gray-900">
-                <span className="text-xl font-bold">{bn(p.today)}</span> টাকা
+                <span className="text-xl font-bold">
+                  {toBanglaNumber(product.today)}
+                </span>{" "}
+                টাকা
               </p>
-              <Badge product={p} />
+              <PriceChange product={product} />
             </div>
           </div>
         ))}

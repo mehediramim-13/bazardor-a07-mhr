@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Hind_Siliguri } from "next/font/google";
+import { Geist, Hind_Siliguri, Noto_Sans_Bengali } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Headerx";
 import Nav from "./components/Nav";
@@ -12,6 +12,11 @@ const hindSiliguri = Hind_Siliguri({
   display: "swap",
 });
 
+const notoBengali = Noto_Sans_Bengali({
+  variable: "--font-noto-bengali",
+  subsets: ["bengali", "latin"],
+  display: "swap",
+});
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -36,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="bn"
       data-scroll-behavior="smooth"
       data-theme="light"
-      className={`${geistSans.variable} ${hindSiliguri.variable} h-full antialiased scroll-smooth`}
+      className={`${geistSans.variable} ${hindSiliguri.variable} ${notoBengali.variable} h-full antialiased scroll-smooth`}
     >
       <body className={`${hindSiliguri.variable} font-sans flex min-h-screen flex-col bg-[#F0F5F0]`}>
         
