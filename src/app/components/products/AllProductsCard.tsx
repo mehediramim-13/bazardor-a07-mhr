@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 export interface Product {
@@ -126,9 +127,10 @@ const AllProducts = ({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {sortedProducts.map((product) => (
-          <div
+          <Link
             key={product.id}
-            className="rounded-2xl border border-gray-200 bg-[#FAFCFA] p-4"
+            href={`/product-details/${product.id}`}
+            className="block rounded-2xl border border-gray-200 bg-[#FAFCFA] p-4 transition hover:border-green-600 hover:shadow-md"
           >
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-2xl">
@@ -154,7 +156,7 @@ const AllProducts = ({
               </p>
               <PriceChange product={product} />
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

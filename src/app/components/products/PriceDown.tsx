@@ -1,5 +1,7 @@
 "use cache";
 
+import Link from "next/link";
+
 interface Product {
   id: number;
   nameBn: string;
@@ -57,9 +59,10 @@ const PriceDown = async () => {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {visibleProducts.map((product) => (
-          <div
+          <Link
             key={product.id}
-            className="rounded-2xl border border-gray-200 bg-[#FAFCFA] p-4"
+            href={`/product-details/${product.id}`}
+            className="block rounded-2xl border border-gray-200 bg-[#FAFCFA] p-4 transition hover:border-green-600 hover:shadow-md"
           >
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-2xl">
@@ -88,7 +91,7 @@ const PriceDown = async () => {
                 {toBanglaPercent(Math.abs(product.change.pct))}%
               </span>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>
