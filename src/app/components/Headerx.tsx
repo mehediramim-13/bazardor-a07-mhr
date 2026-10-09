@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import TodayDate from "./TodayDate";
-
 const Header = () => {
   return (
     <header className="border-b border-gray-200 bg-[#FAFCFA]">
@@ -20,19 +19,23 @@ const Header = () => {
         </Link>
 
         <div className="flex items-center gap-2">
+        <Link href="/signin">
         <button
             type="button"
             className="rounded-lg px-4 py-2 text-md font-medium text-black transition hover:bg-gray-200"
           >
             সাইন ইন
           </button>
+        </Link>
 
+         <Link href="/signup">
           <button
             type="button"
             className="rounded-lg bg-[#05893E] px-4 py-2 text-md text-white transition hover:bg-green-800 font-medium"
           >
             সাইন আপ
           </button>
+         </Link>
           
         </div>
       </div>
