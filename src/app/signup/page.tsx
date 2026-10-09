@@ -1,4 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { authClient } from "@/lib/auth-client";
 
 const inputClass =
   "w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-600 focus:ring-2 focus:ring-green-600/20";
@@ -9,6 +15,61 @@ const socialBtn =
   "btn h-10 min-h-10 w-full flex-nowrap gap-1.5 whitespace-nowrap border-[#e5e5e5] bg-white px-2 text-xs font-medium text-black";
 
 const SignUpPage = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState("");
+
+  const showError = (message: string) => {
+    setFormError(message);
+    toast.error(message);
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFormError("");
+    const formData = new FormData(e.currentTarget);
+    const { name, email, password, confirmPassword } = Object.fromEntries(
+      formData.entries()
+    ) as {
+      name: string;
+      email: string;
+      password: string;
+      confirmPassword: string;
+    };
+
+    if (password.length < 8) {
+      showError("পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।");
+      return;
+    }
+    if (password !== confirmPassword) {
+      showError("পাসওয়ার্ড দুটি মিলছে না।");
+      return;
+    }
+
+    setLoading(true);
+    const { data, error } = await authClient.signUp.email({
+      name,
+      email,
+      password,
+      callbackURL: "/",
+    });
+    setLoading(false);
+
+    if (data) {
+      toast.success("অ্যাকাউন্ট তৈরি হয়েছে।");
+      router.push("/");
+      router.refresh();
+    }
+    if (error) {
+      console.log("SIGNUP ERROR:", error);
+      showError(
+        error.code?.startsWith("USER_ALREADY_EXISTS")
+          ? "এই ইমেইল দিয়ে আগে থেকেই একটি অ্যাকাউন্ট আছে। সাইন ইন করে নিন।"
+          : "সাইন আপ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।"
+      );
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-10">
       <div className="text-center">
@@ -21,7 +82,26 @@ const SignUpPage = () => {
       </div>
 
       <div className="mx-auto mt-8 w-full max-w-[416px] rounded-2xl border border-gray-200 bg-base-100 p-6">
-        <form className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4">
+          {formError && (
+            <div
+              role="alert"
+              className="flex items-center gap-3 rounded-xl bg-[#d13438] px-5 py-4 text-white shadow-lg"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                className="shrink-0"
+                fill="#fbbf24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M12 2 1 21h22L12 2Zm1 15h-2v-2h2v2Zm0-4h-2V9h2v4Z" />
+              </svg>
+              <span className="text-sm leading-relaxed">{formError}</span>
+            </div>
+          )}
+
           <div>
             <label htmlFor="name" className={labelClass}>
               নাম
@@ -30,6 +110,7 @@ const SignUpPage = () => {
               id="name"
               name="name"
               type="text"
+              required
               autoComplete="name"
               placeholder="যেমন: রহিম উদ্দিন"
               className={inputClass}
@@ -44,6 +125,7 @@ const SignUpPage = () => {
               id="email"
               name="email"
               type="email"
+              required
               autoComplete="email"
               placeholder="you@example.com"
               className={inputClass}
@@ -58,6 +140,7 @@ const SignUpPage = () => {
               id="password"
               name="password"
               type="password"
+              required
               autoComplete="new-password"
               placeholder="কমপক্ষে ৮ অক্ষর"
               className={inputClass}
@@ -72,6 +155,7 @@ const SignUpPage = () => {
               id="confirmPassword"
               name="confirmPassword"
               type="password"
+              required
               autoComplete="new-password"
               placeholder="আবার লিখুন"
               className={inputClass}
@@ -80,9 +164,10 @@ const SignUpPage = () => {
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-[#05893E] py-2.5 text-base font-semibold text-white shadow-md transition hover:bg-green-800"
+            disabled={loading}
+            className="w-full rounded-lg bg-[#05893E] py-2.5 text-base font-semibold text-white shadow-md transition hover:bg-green-800 disabled:opacity-60"
           >
-            অ্যাকাউন্ট তৈরি করুন
+            {loading ? "অপেক্ষা করুন..." : "অ্যাকাউন্ট তৈরি করুন"}
           </button>
         </form>
 
