@@ -70,6 +70,11 @@ const SignInPage = () => {
     provider: "google",
   });
  };
+  const handleGithubSignIn = async() => {
+   const data = await authClient.signIn.social({
+    provider: "github",
+  });
+ };
 
 
   return (
@@ -182,7 +187,7 @@ const SignInPage = () => {
             Google দিয়ে চালিয়ে যান
           </button>
 
-          <button type="button" className={socialBtn}>
+          <button type="button" className={socialBtn} onClick={handleGithubSignIn}>
             <svg
               aria-label="GitHub logo"
               width="16"
