@@ -104,7 +104,7 @@ const SummaryCard = ({
 }) => (
   <div className="rounded-2xl border border-gray-200 bg-[#FAFCFA] px-6 py-4">
     <p className="text-sm text-gray-500">{label}</p>
-    <p className={`mt-1 ${priceColor}`}>
+    <p className={`mt-1 font-notosans ${priceColor}`}>
       <span className="text-3xl font-bold">{toBanglaPrice(price)}</span> টাকা
     </p>
     <p className="mt-1 text-sm text-gray-500">{note}</p>
@@ -177,7 +177,7 @@ const ProductDetailsContent = async ({
 
           <div className="rounded-2xl bg-gray-100 px-8 py-4 text-center">
             <p className="text-gray-600">আজকের দাম</p>
-            <p className="text-5xl font-bold text-gray-900">
+            <p className="font-notosans text-5xl font-bold text-gray-900">
               {toBanglaNumber(product.today)}
             </p>
             <p className="text-gray-600">টাকা / {unitLabel}</p>
@@ -235,13 +235,13 @@ const ProductDetailsContent = async ({
                 <tr key={row.market} className="even:bg-[#F3F7F3]">
                   <td className="px-5 py-3 text-gray-900">{row.market}</td>
                   <td className="px-5 py-3 text-gray-500">{row.division}</td>
-                  <td className="px-5 py-3 text-right text-gray-700">
+                  <td className="px-5 py-3 text-right font-notosans text-gray-700">
                     {toBanglaPrice(row.min)} টাকা
                   </td>
-                  <td className="px-5 py-3 text-right text-gray-700">
+                  <td className="px-5 py-3 text-right font-notosans text-gray-700">
                     {toBanglaPrice(row.max)} টাকা
                   </td>
-                  <td className="px-5 py-3 text-right font-bold text-gray-900">
+                  <td className="px-5 py-3 text-right font-notosans font-bold text-gray-900">
                     {toBanglaPrice(row.average)} টাকা
                   </td>
                 </tr>

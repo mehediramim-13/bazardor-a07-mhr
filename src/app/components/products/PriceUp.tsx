@@ -79,7 +79,7 @@ const PriceUp = async () => {
                 </span>{" "}
                 টাকা
               </p>
-              <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-3 py-1 text-[15px] font-medium text-red-700 font-[family-name:var(--font-noto-bengali)]">
+              <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-3 py-1 text-[15px] font-medium text-red-700 font-notosans">
                 <span className="text-[10px]">▲</span>
                 {toBanglaPercent(product.change.pct)}%
               </span>

@@ -64,7 +64,7 @@ const PriceChange = ({ product }: { product: Product }) => {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[15px] font-medium font-[family-name:var(--font-noto-bengali)] ${style.colors}`}
+      className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[15px] font-medium font-notosans ${style.colors}`}
     >
       <span className="text-[10px]">{style.arrow}</span>
       {toBanglaPercent(percent)}%

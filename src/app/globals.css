@@ -11,3 +11,7 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+@theme inline {
+  --font-notosans: var(--font-noto-bengali);
+}

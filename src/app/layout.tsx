@@ -45,8 +45,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className={`${hindSiliguri.variable} font-sans flex min-h-screen flex-col bg-[#F0F5F0]`}>
         
-     <Header></Header>
+      <div className="sticky top-0 z-50">
+         <Header></Header>
      <Nav></Nav>
+      </div>
         <main>
           {children}
         </main>

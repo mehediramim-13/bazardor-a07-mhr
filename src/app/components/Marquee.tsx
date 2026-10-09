@@ -22,6 +22,12 @@ const UNIT_BN: Record<string, string> = {
 
 const bn = (n: number) => Number(n).toLocaleString("bn-BD");
 
+const splitName = (name: string): [string, string] => {
+  const index = name.indexOf("(");
+  if (index === -1) return [name, ""];
+  return [name.slice(0, index), name.slice(index)];
+};
+
 const pickItems = (products: Product[]) => {
   const up = products
     .filter((p) => p.change?.dir === "up")
@@ -51,28 +57,36 @@ const Marquee = async () => {
   return (
     <div className="border-b border-gray-200 py-2 bg-[#FAFCFA]">
       <MarqueeText
-     duration={10}
-     pauseOnHover={true}
-    direction="right"
->
+        duration={10}
+        pauseOnHover={true}
+        direction="right"
+      >
         {items.map((p) => {
           const isUp = p.change.dir === "up";
+          const [mainName, bracketName] = splitName(p.nameBn);
           return (
             <span
               key={p.id}
               className="inline-flex items-center gap-2 px-6 whitespace-nowrap border-r border-gray-300"
             >
               <span>{p.image}</span>
-              <span className="font-semibold">{p.nameBn}</span>
+              <span className="font-medium">
+                {mainName}
+                {bracketName && (
+                  <span className="font-notosans">{bracketName}</span>
+                )}
+              </span>
               <span className="text-sm text-gray-500">
-                {bn(p.today)} টাকা/{UNIT_BN[p.unit] ?? p.unit}
+                <span className="font-notosans">{bn(p.today)}</span> টাকা/
+                {UNIT_BN[p.unit] ?? p.unit}
               </span>
               <span
-                className={`text-sm font-semibold ${
+                className={`text-sm font-medium ${
                   isUp ? "text-red-600" : "text-green-600"
                 }`}
               >
-                {isUp ? "▲" : "▼"} {bn(p.change.pct)}%
+                {isUp ? "▲" : "▼"}{" "}
+                <span className="font-notosans">{bn(p.change.pct)}%</span>
               </span>
             </span>
           );
