@@ -1,5 +1,4 @@
 "use cache";
-
 import Link from "next/link";
 
 interface Product {

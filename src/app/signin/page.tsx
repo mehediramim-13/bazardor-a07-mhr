@@ -33,17 +33,26 @@ const SignInPage = () => {
       password: string;
     };
 
+    const redirectParam = new URLSearchParams(window.location.search).get(
+      "redirect"
+    );
+    const redirectTo =
+      redirectParam &&
+      redirectParam.startsWith("/") &&
+      !redirectParam.startsWith("//")
+        ? redirectParam
+        : "/";
+
     setLoading(true);
     const { data, error } = await authClient.signIn.email({
       email,
       password,
-      callbackURL: "/",
     });
     setLoading(false);
 
     if (data) {
       toast.success("সফলভাবে সাইন ইন হয়েছে।");
-      router.push("/");
+      router.push(redirectTo);
       router.refresh();
     }
     if (error) {

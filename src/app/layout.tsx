@@ -51,7 +51,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
      <Nav></Nav>
       </div>
         <main>
-          <Toaster position="top-center"></Toaster>
+            <Toaster
+          position="top-center"
+          toastOptions={{
+            duration: 3000,
+            success: { duration: 3000 },
+            error: { duration: 3000 },
+          }}></Toaster>
           {children}
         </main>
         <Footer></Footer>
