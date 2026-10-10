@@ -76,7 +76,7 @@ const ChangeSentence = ({ direction, percent }: { direction: string; percent: nu
     return (
       <>
         গতকালের তুলনায় আজ দাম <strong className="text-gray-900">বেড়েছে</strong>{" "}
-        {toBanglaPercent(percent)}%
+        <span className="font-notosans">{toBanglaPercent(percent)}%</span>
       </>
     );
   }
@@ -85,7 +85,7 @@ const ChangeSentence = ({ direction, percent }: { direction: string; percent: nu
     return (
       <>
         গতকালের তুলনায় আজ দাম <strong className="text-gray-900">কমেছে</strong>{" "}
-        {toBanglaPercent(percent)}%
+        <span className="font-notosans">{toBanglaPercent(percent)}%</span>
       </>
     );
   }
@@ -199,15 +199,10 @@ const ProductDetailsContent = async ({
               <h1 className="text-2xl font-bold leading-tight text-gray-900 sm:text-3xl md:text-4xl">
                 {product.nameBn}
               </h1>
-              <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                <p className="text-sm text-gray-500 sm:text-base">প্রতি {unitLabel}</p>
-                <Link
-                  href={`/category/${product.category}`}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-medium text-green-700 transition hover:bg-green-100 sm:text-sm"
-                >
-                  <span>{product.categoryIcon}</span>
-                  {product.categoryNameBn}
-                </Link>
+              <div className="mt-1.5">
+                <p className="text-sm text-gray-500 sm:text-base">
+                  প্রতি {unitLabel} · {product.categoryNameBn}
+                </p>
               </div>
               <p className="mt-2 text-sm text-gray-600 sm:text-base">
                 <ChangeSentence direction={direction} percent={percent} />
