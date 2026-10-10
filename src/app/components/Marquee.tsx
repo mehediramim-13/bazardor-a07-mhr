@@ -1,4 +1,4 @@
-"use cache";
+import { cacheLife } from "next/cache";
 import MarqueeText from "react-marquee-text";
 
 type Product = {
@@ -47,27 +47,41 @@ const pickItems = (products: Product[]) => {
   return result.slice(0, 11);
 };
 
+async function getProducts(): Promise<Product[]> {
+  "use cache";
+  cacheLife("minutes");
+
+  const res = await fetch("https://api.abcz.workers.dev/api/bazardor/products", {
+    signal: AbortSignal.timeout(8000),
+  });
+
+  if (!res.ok) throw new Error(`Products fetch failed: ${res.status}`);
+
+  return res.json();
+}
+
 const Marquee = async () => {
-  const res = await fetch(
-    "https://api.abcz.workers.dev/api/bazardor/products"
-  );
-  const data: Product[] = await res.json();
-  const items = pickItems(data);
+  let items: Product[];
+
+  try {
+    items = pickItems(await getProducts());
+  } catch (error) {
+    console.error("Marquee:", error);
+    return null;
+  }
+
+  if (items.length === 0) return null;
 
   return (
-    <div className="border-b border-gray-200 py-2 bg-[#FAFCFA]">
-      <MarqueeText
-        duration={10}
-        pauseOnHover={true}
-        direction="right"
-      >
+    <div className="overflow-hidden border-b border-gray-200 bg-[#FAFCFA] py-1.5 text-sm sm:py-2 sm:text-base">
+      <MarqueeText duration={10} pauseOnHover={true} direction="right">
         {items.map((p) => {
           const isUp = p.change.dir === "up";
           const [mainName, bracketName] = splitName(p.nameBn);
           return (
             <span
               key={p.id}
-              className="inline-flex items-center gap-2 px-6 whitespace-nowrap border-r border-gray-300"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap border-r border-gray-300 px-4 sm:gap-2 sm:px-6"
             >
               <span>{p.image}</span>
               <span className="font-medium">
@@ -76,12 +90,12 @@ const Marquee = async () => {
                   <span className="font-notosans">{bracketName}</span>
                 )}
               </span>
-              <span className="text-sm text-gray-500">
+              <span className="text-xs text-gray-500 sm:text-sm">
                 <span className="font-notosans">{bn(p.today)}</span> টাকা/
                 {UNIT_BN[p.unit] ?? p.unit}
               </span>
               <span
-                className={`text-sm font-medium ${
+                className={`text-xs font-medium sm:text-sm ${
                   isUp ? "text-red-600" : "text-green-600"
                 }`}
               >

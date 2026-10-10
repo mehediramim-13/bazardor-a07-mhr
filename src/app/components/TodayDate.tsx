@@ -7,12 +7,24 @@ const TodayDate = async ({
 }) => {
   await connection();
 
-  const date = new Date().toLocaleDateString("bn-BD", {
+  const parts = new Intl.DateTimeFormat("bn-BD", {
     dateStyle: "full",
     timeZone: "Asia/Dhaka",
-  });
+  }).formatToParts(new Date());
 
-  return <span className={className}>{date}</span>;
+  return (
+    <span className={`whitespace-nowrap ${className}`}>
+      {parts.map((part, index) =>
+        part.type === "day" || part.type === "year" ? (
+          <span key={index} className="font-notosans">
+            {part.value}
+          </span>
+        ) : (
+          part.value
+        )
+      )}
+    </span>
+  );
 };
 
 export default TodayDate;
