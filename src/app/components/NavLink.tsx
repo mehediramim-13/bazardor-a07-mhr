@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 interface Category {
   id: string;
@@ -12,6 +13,15 @@ interface Category {
 
 const NavLinks = ({ categories }: { categories: Category[] }) => {
   const pathname = usePathname();
+  const activeRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [pathname]);
 
   return (
     <>
@@ -22,9 +32,10 @@ const NavLinks = ({ categories }: { categories: Category[] }) => {
         return (
           <Link
             key={c.id}
+            ref={isActive ? activeRef : undefined}
             href={href}
             aria-current={isActive ? "page" : undefined}
-            className={`my-2 flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-semibold shadow-sm transition ${
+            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-sm font-semibold shadow-sm transition sm:gap-2 sm:px-3 ${
               isActive
                 ? "bg-green-700 text-white shadow-md"
                 : "text-gray-800 shadow-none hover:bg-gray-100 hover:text-green-700"

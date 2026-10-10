@@ -26,7 +26,7 @@ const LoadingPage = () => {
                     লোড হচ্ছে...
                 </h2>
                 <p className="mt-1.5 text-sm text-gray-500">
-                    আজকের বাজারদর আনা হচ্ছে, একটু অপেক্ষা করুন
+                    একটু অপেক্ষা করুন, পেজটি প্রস্তুত হচ্ছে
                 </p>
 
                 <div className="mt-5 flex gap-1.5" aria-hidden="true">
