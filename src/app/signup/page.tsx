@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 
 const inputClass =
-  "w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-600 focus:ring-2 focus:ring-green-600/20";
+  "w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-600 focus:ring-2 focus:ring-green-600/20 sm:text-sm";
 
 const labelClass = "mb-1 block text-sm font-medium text-gray-900";
 
@@ -70,35 +70,35 @@ const SignUpPage = () => {
     }
   };
 
-   const handleGoogleSignUp = async() => {
-     const data = await authClient.signIn.social({
+  const handleGoogleSignUp = async () => {
+    await authClient.signIn.social({
       provider: "google",
     });
-   };
+  };
 
-      const handleGithubSignUp = async() => {
-     const data = await authClient.signIn.social({
+  const handleGithubSignUp = async () => {
+    await authClient.signIn.social({
       provider: "github",
     });
-   };
+  };
 
   return (
-    <div className="container mx-auto px-4 py-10">
+    <div className="container mx-auto px-4 py-6 sm:py-10">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+        <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl">
           অ্যাকাউন্ট তৈরি করুন
         </h1>
-        <p className="mt-2 text-gray-600">
+        <p className="mx-auto mt-2 max-w-md text-sm text-gray-600 sm:text-base">
           বিনা খরচে সাইন আপ করে সব বিস্তারিত দাম দেখুন।
         </p>
       </div>
 
-      <div className="mx-auto mt-8 w-full max-w-[416px] rounded-2xl border border-gray-200 bg-base-100 p-6">
+      <div className="mx-auto mt-6 w-full max-w-[416px] rounded-2xl border border-gray-200 bg-base-100 p-4 sm:mt-8 sm:p-6">
         <form onSubmit={onSubmit} className="space-y-4">
           {formError && (
             <div
               role="alert"
-              className="flex items-center gap-3 rounded-xl bg-[#d13438] px-5 py-4 text-white shadow-lg"
+              className="flex items-center gap-3 rounded-xl bg-[#d13438] px-4 py-3 text-white shadow-lg sm:px-5 sm:py-4"
             >
               <svg
                 width="18"
@@ -177,13 +177,13 @@ const SignUpPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-[#05893E] py-2.5 text-base font-semibold text-white shadow-md transition hover:bg-green-800 disabled:opacity-60"
+            className="w-full cursor-pointer rounded-lg bg-[#05893E] py-2.5 text-base font-semibold text-white shadow-md transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "অপেক্ষা করুন..." : "অ্যাকাউন্ট তৈরি করুন"}
           </button>
         </form>
 
-        <div className="my-5 flex items-center gap-4 text-sm text-gray-600">
+        <div className="my-4 flex items-center gap-3 text-sm text-gray-600 sm:my-5 sm:gap-4">
           <span className="h-px flex-1 bg-gray-300" />
           অথবা
           <span className="h-px flex-1 bg-gray-300" />
@@ -240,7 +240,7 @@ const SignUpPage = () => {
           </button>
         </div>
 
-        <p className="mt-5 text-center text-gray-700">
+        <p className="mt-4 text-center text-sm text-gray-700 sm:mt-5 sm:text-base">
           অ্যাকাউন্ট আছে?{" "}
           <Link
             href="/signin"
@@ -251,7 +251,7 @@ const SignUpPage = () => {
         </p>
       </div>
 
-      <p className="mt-8 text-center">
+      <p className="mt-6 text-center text-sm sm:mt-8 sm:text-base">
         <Link
           href="/"
           className="text-gray-600 underline underline-offset-2 hover:text-green-700"
