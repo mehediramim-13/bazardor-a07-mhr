@@ -64,7 +64,7 @@ const PriceChange = ({ product }: { product: Product }) => {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[15px] font-medium font-notosans ${style.colors}`}
+      className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-sm font-medium font-notosans sm:px-3 sm:text-[15px] ${style.colors}`}
     >
       <span className="text-[10px]">{style.arrow}</span>
       {toBanglaPercent(percent)}%
@@ -99,22 +99,25 @@ const AllProducts = ({
   }, [products, sortBy]);
 
   return (
-    <section id="all-products" className="container mx-auto scroll-mt-6 px-4 py-6">
+    <section
+      id="all-products"
+      className="container mx-auto scroll-mt-6 px-4 py-6 sm:py-8"
+    >
       {showTitle && (
-        <h2 className="text-2xl font-bold text-gray-900">সব পণ্য</h2>
+        <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">সব পণ্য</h2>
       )}
 
-      <div className="mb-4 mt-3 flex items-center justify-between gap-3">
-        <p className="text-gray-600">
+      <div className="mb-3 mt-3 flex flex-col gap-3 sm:mb-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-gray-600 sm:text-base">
           মোট {toBanglaNumber(sortedProducts.length)}টি পণ্য দেখানো হচ্ছে
         </p>
 
-        <label className="flex items-center gap-2 text-gray-600">
+        <label className="flex items-center justify-between gap-2 text-sm text-gray-600 sm:justify-start sm:text-base">
           সাজান
           <select
             value={sortBy}
             onChange={(event) => setSortBy(event.target.value)}
-            className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 outline-none focus:border-green-600"
+            className="min-w-0 flex-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 outline-none focus:border-green-600 sm:flex-none"
           >
             {SORT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -125,19 +128,19 @@ const AllProducts = ({
         </label>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
         {sortedProducts.map((product) => (
           <Link
             key={product.id}
             href={`/product-details/${product.id}`}
-            className="block rounded-2xl border border-gray-200 bg-[#FAFCFA] p-4 transition hover:border-green-600 hover:shadow-md"
+            className="block rounded-2xl border border-gray-200 bg-[#FAFCFA] p-3.5 transition hover:border-green-600 hover:shadow-md sm:p-4"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-2xl">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-xl sm:h-12 sm:w-12 sm:text-2xl">
                 {product.image}
               </div>
-              <div>
-                <h3 className="text-lg font-bold leading-tight text-gray-900">
+              <div className="min-w-0">
+                <h3 className="truncate text-base font-bold leading-tight text-gray-900 sm:text-lg">
                   {product.nameBn}
                 </h3>
                 <p className="text-xs text-gray-500">
@@ -147,9 +150,9 @@ const AllProducts = ({
             </div>
 
             <p className="mt-3 text-xs text-gray-500">আজকের দাম</p>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <p className="text-gray-900">
-                <span className="text-xl font-bold">
+                <span className="text-lg font-bold sm:text-xl">
                   {toBanglaNumber(product.today)}
                 </span>{" "}
                 টাকা
