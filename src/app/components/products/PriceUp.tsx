@@ -68,7 +68,7 @@ const PriceUp = async () => {
 
   const risenProducts = products
     .filter((product) => product.change?.dir === "up")
-    .sort((a, b) => b.change.pct - a.change.pct)
+    .sort((a, b) => Math.abs(b.change.pct) - Math.abs(a.change.pct))
     .slice(0, 6);
 
   return (
@@ -109,7 +109,7 @@ const PriceUp = async () => {
               </p>
               <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-red-50 px-2.5 py-1 text-sm font-medium text-red-700 font-notosans sm:px-3 sm:text-[15px]">
                 <span className="text-[10px]">▲</span>
-                {toBanglaPercent(product.change.pct)}%
+                {toBanglaPercent(Math.abs(product.change.pct))}%
               </span>
             </div>
           </Link>

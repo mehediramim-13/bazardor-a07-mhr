@@ -51,14 +51,13 @@ const SignUpPage = () => {
       name,
       email,
       password,
-      callbackURL: "/",
+      callbackURL: "/signin",
     });
     setLoading(false);
 
     if (data) {
-      toast.success("অ্যাকাউন্ট তৈরি হয়েছে।");
-      router.push("/");
-      router.refresh();
+      toast.success("অ্যাকাউন্ট তৈরি হয়েছে। এখন সাইন ইন করুন।");
+      router.push("/signin");
     }
     if (error) {
       console.log("SIGNUP ERROR:", error);
@@ -73,12 +72,14 @@ const SignUpPage = () => {
   const handleGoogleSignUp = async () => {
     await authClient.signIn.social({
       provider: "google",
+      callbackURL: "/",
     });
   };
 
   const handleGithubSignUp = async () => {
     await authClient.signIn.social({
       provider: "github",
+      callbackURL: "/",
     });
   };
 

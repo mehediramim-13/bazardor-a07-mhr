@@ -10,7 +10,7 @@ type Product = {
   change: { dir: "up" | "down"; pct: number };
 };
 
-const UNIT_BN: Record<string, string> = {
+const UNIT_LABELS: Record<string, string> = {
   kg: "কেজি",
   dozen: "ডজন",
   litre: "লিটার",
@@ -20,70 +20,80 @@ const UNIT_BN: Record<string, string> = {
   gram: "গ্রাম",
 };
 
-const bn = (n: number) => Number(n).toLocaleString("bn-BD");
+const toBanglaNumber = (value: number) => Number(value).toLocaleString("bn-BD");
+
+const toBanglaPercent = (value: number) =>
+  Number(value).toLocaleString("bn-BD", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
 const splitName = (name: string): [string, string] => {
-  const index = name.indexOf("(");
-  if (index === -1) return [name, ""];
-  return [name.slice(0, index), name.slice(index)];
+  const bracketIndex = name.indexOf("(");
+  if (bracketIndex === -1) return [name, ""];
+  return [name.slice(0, bracketIndex), name.slice(bracketIndex)];
 };
 
-const pickItems = (products: Product[]) => {
-  const up = products
-    .filter((p) => p.change?.dir === "up")
+const pickTickerProducts = (products: Product[]) => {
+  const risenProducts = products
+    .filter((product) => product.change?.dir === "up")
     .sort((a, b) => b.change.pct - a.change.pct);
 
-  const down = products
-    .filter((p) => p.change?.dir === "down")
+  const fallenProducts = products
+    .filter((product) => product.change?.dir === "down")
     .sort((a, b) => a.change.pct - b.change.pct);
 
-  let result = [...up.slice(0, 6), ...down.slice(0, 6)];
+  let pickedProducts = [...risenProducts.slice(0, 6), ...fallenProducts.slice(0, 6)];
 
-  if (result.length < 11) {
-    const rest = [...up.slice(6), ...down.slice(5)];
-    result = [...result, ...rest.slice(0, 11 - result.length)];
+  if (pickedProducts.length < 11) {
+    const remainingProducts = [...risenProducts.slice(6), ...fallenProducts.slice(6)];
+    pickedProducts = [
+      ...pickedProducts,
+      ...remainingProducts.slice(0, 11 - pickedProducts.length),
+    ];
   }
 
-  return result.slice(0, 11);
+  return pickedProducts.slice(0, 11);
 };
 
 async function getProducts(): Promise<Product[]> {
   "use cache";
   cacheLife("minutes");
 
-  const res = await fetch("https://api.abcz.workers.dev/api/bazardor/products", {
+  const response = await fetch("https://api.abcz.workers.dev/api/bazardor/products", {
     signal: AbortSignal.timeout(8000),
   });
 
-  if (!res.ok) throw new Error(`Products fetch failed: ${res.status}`);
+  if (!response.ok) throw new Error(`Products fetch failed: ${response.status}`);
 
-  return res.json();
+  return response.json();
 }
 
 const Marquee = async () => {
-  let items: Product[];
+  let tickerProducts: Product[];
 
   try {
-    items = pickItems(await getProducts());
+    tickerProducts = pickTickerProducts(await getProducts());
   } catch (error) {
     console.error("Marquee:", error);
     return null;
   }
 
-  if (items.length === 0) return null;
+  if (tickerProducts.length === 0) return null;
 
   return (
     <div className="overflow-hidden border-b border-gray-200 bg-[#FAFCFA] py-1.5 text-sm sm:py-2 sm:text-base">
       <MarqueeText duration={10} pauseOnHover={true} direction="right">
-        {items.map((p) => {
-          const isUp = p.change.dir === "up";
-          const [mainName, bracketName] = splitName(p.nameBn);
+        {tickerProducts.map((product) => {
+          const isPriceUp = product.change.dir === "up";
+          const [mainName, bracketName] = splitName(product.nameBn);
+
           return (
             <span
-              key={p.id}
+              key={product.id}
               className="inline-flex items-center gap-1.5 whitespace-nowrap border-r border-gray-300 px-4 sm:gap-2 sm:px-6"
             >
-              <span>{p.image}</span>
+              <span>{product.image}</span>
               <span className="font-medium">
                 {mainName}
                 {bracketName && (
@@ -91,16 +101,18 @@ const Marquee = async () => {
                 )}
               </span>
               <span className="text-xs text-gray-500 sm:text-sm">
-                <span className="font-notosans">{bn(p.today)}</span> টাকা/
-                {UNIT_BN[p.unit] ?? p.unit}
+                <span className="font-notosans">{toBanglaNumber(product.today)}</span> টাকা/
+                {UNIT_LABELS[product.unit] ?? product.unit}
               </span>
               <span
                 className={`text-xs font-medium sm:text-sm ${
-                  isUp ? "text-red-600" : "text-green-600"
+                  isPriceUp ? "text-red-600" : "text-green-600"
                 }`}
               >
-                {isUp ? "▲" : "▼"}{" "}
-                <span className="font-notosans">{bn(p.change.pct)}%</span>
+                {isPriceUp ? "▲" : "▼"}{" "}
+                <span className="font-notosans">
+                  {toBanglaPercent(Math.abs(product.change.pct))}%
+                </span>
               </span>
             </span>
           );

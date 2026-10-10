@@ -1,17 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { IoArrowUndo } from "react-icons/io5";
+import { IoArrowUndo, IoCreateOutline } from "react-icons/io5";
 import { authClient } from "@/lib/auth-client";
 import { UserAvatar } from "../components/UserMenu";
 
 const ProfilePage = () => {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
-  const [name, setName] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!isPending && !session?.user) {
@@ -34,47 +33,17 @@ const ProfilePage = () => {
     });
   };
 
-  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const newName = (name ?? session?.user?.name ?? "").trim();
-
-    if (!newName) {
-      toast.error("নাম খালি রাখা যাবে না।");
-      return;
-    }
-    if (newName === session?.user?.name) {
-      toast("নামে কোনো পরিবর্তন নেই।");
-      return;
-    }
-
-    setSaving(true);
-    const { error } = await authClient.updateUser({ name: newName });
-    setSaving(false);
-
-    if (error) {
-      console.log("UPDATE NAME ERROR:", error);
-      toast.error("নাম পরিবর্তন করা যায়নি। আবার চেষ্টা করুন।");
-      return;
-    }
-
-    setName(null);
-    toast.success("নাম সফলভাবে পরিবর্তন হয়েছে।");
-    router.refresh();
-  };
-
   if (isPending || !session?.user) {
     return (
       <div className="container mx-auto px-4 py-6 sm:py-10">
         <div className="mx-auto max-w-[920px] space-y-4 sm:space-y-6">
           <div className="h-24 animate-pulse rounded-2xl bg-gray-200" />
-          <div className="h-56 animate-pulse rounded-2xl bg-gray-200 sm:h-64" />
         </div>
       </div>
     );
   }
 
   const { user } = session;
-  const inputValue = name ?? user.name ?? "";
 
   return (
     <div className="container mx-auto px-4 py-6 sm:py-10">
@@ -99,48 +68,24 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg border border-red-500 bg-white px-5 py-2.5 font-medium text-red-600 transition hover:bg-red-50 sm:w-auto"
-          >
-            <IoArrowUndo />
-            সাইন আউট
-          </button>
-        </div>
-
-        <div className="mt-4 rounded-2xl border border-gray-200 bg-base-100 p-4 sm:mt-6 sm:p-6">
-          <h2 className="text-lg font-bold text-gray-900 sm:text-xl">
-            নাম হালনাগাদ করুন
-          </h2>
-
-          <form onSubmit={handleUpdate} className="mt-4">
-            <label
-              htmlFor="name"
-              className="mb-1 block text-sm font-medium text-gray-900 sm:text-base"
+          <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:flex-row">
+            <Link
+              href="/profile/updateProfile"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#05893E] px-5 py-2.5 font-medium text-white shadow-md transition hover:bg-green-800 sm:w-auto"
             >
-              নাম
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={inputValue}
-              onChange={(e) => setName(e.target.value)}
-              required
-              autoComplete="name"
-              placeholder="আপনার নাম লিখুন"
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-            />
+              <IoCreateOutline />
+              তথ্য হালনাগাদ করুন
+            </Link>
 
             <button
-              type="submit"
-              disabled={saving}
-              className="mt-4 w-full cursor-pointer rounded-lg bg-[#05893E] px-5 py-2.5 text-base font-semibold text-white shadow-md transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+              type="button"
+              onClick={handleSignOut}
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-red-500 bg-white px-5 py-2.5 font-medium text-red-600 transition hover:bg-red-50 sm:w-auto"
             >
-              {saving ? "অপেক্ষা করুন..." : "নাম হালনাগাদ করুন"}
+              <IoArrowUndo />
+              সাইন আউট
             </button>
-          </form>
+          </div>
         </div>
       </div>
     </div>

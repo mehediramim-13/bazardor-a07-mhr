@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 
 const NotFound = () => {
@@ -21,7 +20,7 @@ const NotFound = () => {
                 <div className="mt-6 flex flex-col justify-center gap-3 sm:mt-8 sm:flex-row">
                     <button
                         onClick={() => window.history.back()}
-                        className="rounded-full border border-green-600 px-6 py-2.5 text-sm font-semibold text-green-700 transition hover:bg-green-50"
+                        className="cursor-pointer rounded-full border border-green-600 px-6 py-2.5 text-sm font-semibold text-green-700 transition hover:bg-green-50"
                     >
                         পেছনে যান
                     </button>
@@ -29,7 +28,7 @@ const NotFound = () => {
                         href="/"
                         className="rounded-full bg-green-600 px-6 py-2.5 text-center text-sm font-semibold text-white shadow-md transition hover:bg-green-700"
                     >
-                        হোমে যান
+                        হোম পেজে ফিরে যান
                     </Link>
                 </div>
             </div>

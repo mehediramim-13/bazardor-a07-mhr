@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { cacheLife } from "next/cache";
+import PageLoader from "@/app/components/PageLoader";
 
 interface Market {
   market: string;
@@ -198,9 +199,16 @@ const ProductDetailsContent = async ({
               <h1 className="text-2xl font-bold leading-tight text-gray-900 sm:text-3xl md:text-4xl">
                 {product.nameBn}
               </h1>
-              <p className="mt-1 text-sm text-gray-500 sm:text-base">
-                প্রতি {unitLabel} · {product.categoryNameBn}
-              </p>
+              <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                <p className="text-sm text-gray-500 sm:text-base">প্রতি {unitLabel}</p>
+                <Link
+                  href={`/category/${product.category}`}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-medium text-green-700 transition hover:bg-green-100 sm:text-sm"
+                >
+                  <span>{product.categoryIcon}</span>
+                  {product.categoryNameBn}
+                </Link>
+              </div>
               <p className="mt-2 text-sm text-gray-600 sm:text-base">
                 <ChangeSentence direction={direction} percent={percent} />
               </p>
@@ -340,11 +348,7 @@ const ProductDetailsContent = async ({
 
 const ProductDetailsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   return (
-    <Suspense
-      fallback={
-        <p className="container mx-auto px-4 py-10 text-gray-500">লোড হচ্ছে...</p>
-      }
-    >
+    <Suspense fallback={<PageLoader />}>
       <ProductDetailsContent params={params} />
     </Suspense>
   );

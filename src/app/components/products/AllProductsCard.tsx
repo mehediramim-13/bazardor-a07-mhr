@@ -24,8 +24,8 @@ const UNIT_LABELS: Record<string, string> = {
 
 const SORT_OPTIONS = [
   { value: "default", label: "ডিফল্ট" },
-  { value: "price-asc", label: "দাম কম থেকে বেশি" },
-  { value: "price-desc", label: "দাম বেশি থেকে কম" },
+  { value: "price-asc", label: "দাম: কম থেকে বেশি" },
+  { value: "price-desc", label: "দাম: বেশি থেকে কম" },
   { value: "rise", label: "দাম বেশি বেড়েছে" },
   { value: "fall", label: "দাম বেশি কমেছে" },
 ];

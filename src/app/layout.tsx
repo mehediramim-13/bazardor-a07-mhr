@@ -5,7 +5,7 @@ import Header from "./components/Headerx";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import { Toaster } from "react-hot-toast";
-
+import Marquee from "./components/Marquee";
 const hindSiliguri = Hind_Siliguri({
   variable: "--font-hind-siliguri",
   subsets: ["latin", "bengali"],
@@ -49,7 +49,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <div className="sticky top-0 z-50">
          <Header></Header>
      <Nav></Nav>
+ 
       </div>
+          <Marquee></Marquee>
         <main>
             <Toaster
           position="top-center"

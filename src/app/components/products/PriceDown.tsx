@@ -66,17 +66,10 @@ const PriceDown = async () => {
     );
   }
 
-  const fallenProducts = products.filter(
-    (product) => product.change?.dir === "down"
-  );
-
-  const biggestFalls = [...fallenProducts]
-    .sort((a, b) => a.change.pct - b.change.pct)
+  const biggestFalls = products
+    .filter((product) => product.change?.dir === "down")
+    .sort((a, b) => Math.abs(b.change.pct) - Math.abs(a.change.pct))
     .slice(0, 6);
-
-  const visibleProducts = fallenProducts.filter((product) =>
-    biggestFalls.includes(product)
-  );
 
   return (
     <section className="container mx-auto px-4 py-6 sm:py-8">
@@ -86,7 +79,7 @@ const PriceDown = async () => {
       </h2>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-        {visibleProducts.map((product) => (
+        {biggestFalls.map((product) => (
           <Link
             key={product.id}
             href={`/product-details/${product.id}`}

@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { cacheLife } from "next/cache";
 import AllProducts, { type Product } from "@/app/components/products/AllProductsCard";
+import PageLoader from "@/app/components/PageLoader";
 
 type CategoryProduct = Product & {
   categoryNameBn: string;
@@ -87,11 +88,7 @@ const CategoryContent = async ({
 
 const CategoryPage = ({ params }: { params: Promise<{ slug: string }> }) => {
   return (
-    <Suspense
-      fallback={
-        <p className="container mx-auto px-4 py-10 text-gray-500">লোড হচ্ছে...</p>
-      }
-    >
+    <Suspense fallback={<PageLoader />}>
       <CategoryContent params={params} />
     </Suspense>
   );

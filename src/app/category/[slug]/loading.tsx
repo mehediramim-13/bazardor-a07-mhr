@@ -1,7 +1,7 @@
 import PageLoader from "@/app/components/PageLoader";
 
-const LoadingPage = () => {
+const CategoryLoadingPage = () => {
   return <PageLoader />;
 };
 
-export default LoadingPage;
+export default CategoryLoadingPage;

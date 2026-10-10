@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 
@@ -14,10 +14,38 @@ const labelClass = "mb-1 block text-sm font-medium text-gray-900";
 const socialBtn =
   "btn h-10 min-h-10 w-full flex-nowrap gap-1.5 whitespace-nowrap border-[#e5e5e5] bg-white px-2 text-xs font-medium text-black";
 
+const getRedirectTarget = () => {
+  const redirectParam = new URLSearchParams(window.location.search).get(
+    "redirect"
+  );
+
+  const isSafePath =
+    redirectParam &&
+    redirectParam.startsWith("/") &&
+    !redirectParam.startsWith("//") &&
+    !redirectParam.startsWith("/\\");
+
+  return isSafePath ? redirectParam : null;
+};
+
 const SignInPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState("");
+
+  useEffect(() => {
+    const redirectTarget = getRedirectTarget();
+    if (!redirectTarget) return;
+
+    const isDetailsPage = redirectTarget.startsWith("/product-details");
+
+    toast(
+      isDetailsPage
+        ? "বিস্তারিত দেখতে সাইন ইন করুন"
+        : "চালিয়ে যেতে সাইন ইন করুন",
+      { id: "signin-required" }
+    );
+  }, []);
 
   const showError = (message: string) => {
     setFormError(message);
@@ -33,15 +61,7 @@ const SignInPage = () => {
       password: string;
     };
 
-    const redirectParam = new URLSearchParams(window.location.search).get(
-      "redirect"
-    );
-    const redirectTo =
-      redirectParam &&
-      redirectParam.startsWith("/") &&
-      !redirectParam.startsWith("//")
-        ? redirectParam
-        : "/";
+    const redirectTo = getRedirectTarget() ?? "/";
 
     setLoading(true);
     const { data, error } = await authClient.signIn.email({
@@ -68,12 +88,14 @@ const SignInPage = () => {
   const handleGoogleSignIn = async () => {
     await authClient.signIn.social({
       provider: "google",
+      callbackURL: getRedirectTarget() ?? "/",
     });
   };
 
   const handleGithubSignIn = async () => {
     await authClient.signIn.social({
       provider: "github",
+      callbackURL: getRedirectTarget() ?? "/",
     });
   };
 
