@@ -74,7 +74,7 @@ const PriceDown = async () => {
   return (
     <section className="container mx-auto px-4 py-6 sm:py-8">
       <h2 className="mb-3 flex items-center gap-2 text-xl font-bold text-gray-900 sm:mb-4 sm:text-2xl">
-        <span className="text-base text-green-600 sm:text-lg">▼</span>
+        <span className="text-base text-red-600 sm:text-lg">▼</span>
         আজ দাম কমেছে
       </h2>
 
@@ -107,7 +107,7 @@ const PriceDown = async () => {
                 </span>{" "}
                 টাকা
               </p>
-              <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-green-50 px-2.5 py-1 text-sm font-medium text-green-700 font-notosans sm:px-3 sm:text-[15px]">
+              <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-red-50 px-2.5 py-1 text-sm font-medium text-red-700 font-notosans sm:px-3 sm:text-[15px]">
                 <span className="text-[10px]">▼</span>
                 {toBanglaPercent(Math.abs(product.change.pct))}%
               </span>

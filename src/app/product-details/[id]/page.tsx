@@ -20,6 +20,7 @@ interface ProductDetails {
   unit: string;
   image: string;
   today: number;
+  yesterday?: number;
   change: { dir: string; pct: number };
   markets: Market[];
 }
@@ -35,8 +36,8 @@ const UNIT_LABELS: Record<string, string> = {
 };
 
 const CHANGE_STYLES = {
-  up: { arrow: "▲", colors: "text-red-700" },
-  down: { arrow: "▼", colors: "text-green-700" },
+up:   { arrow: "▲", colors: "bg-green-50 text-green-700" },
+down: { arrow: "▼", colors: "bg-red-50 text-red-700" },
   flat: { arrow: "—", colors: "text-gray-600" },
 };
 
@@ -71,12 +72,12 @@ const getProduct = async (id: string): Promise<ProductDetails | null> => {
   return response.json();
 };
 
-const ChangeSentence = ({ direction, percent }: { direction: string; percent: number }) => {
+const ChangeSentence = ({ direction, amount }: { direction: string; amount: number }) => {
   if (direction === "up") {
     return (
       <>
-        গতকালের তুলনায় আজ দাম <strong className="text-gray-900">বেড়েছে</strong>{" "}
-        <span className="font-notosans">{toBanglaPercent(percent)}%</span>
+        গতকালের তুলনায় আজ দাম <strong className="text-gray-900">বেড়েছে</strong> ·{" "}
+        <span className="font-notosans">{toBanglaNumber(amount)}</span> টাকা
       </>
     );
   }
@@ -84,8 +85,8 @@ const ChangeSentence = ({ direction, percent }: { direction: string; percent: nu
   if (direction === "down") {
     return (
       <>
-        গতকালের তুলনায় আজ দাম <strong className="text-gray-900">কমেছে</strong>{" "}
-        <span className="font-notosans">{toBanglaPercent(percent)}%</span>
+        গতকালের তুলনায় আজ দাম <strong className="text-gray-900">কমেছে</strong> ·{" "}
+        <span className="font-notosans">{toBanglaNumber(amount)}</span> টাকা
       </>
     );
   }
@@ -153,6 +154,10 @@ const ProductDetailsContent = async ({
 
   const direction = product.change?.dir ?? "flat";
   const percent = Math.abs(product.change?.pct ?? 0);
+  const amount =
+    typeof product.yesterday === "number"
+      ? Math.abs(product.today - product.yesterday)
+      : 0;
   const changeStyle =
     direction === "up"
       ? CHANGE_STYLES.up
@@ -205,7 +210,7 @@ const ProductDetailsContent = async ({
                 </p>
               </div>
               <p className="mt-2 text-sm text-gray-600 sm:text-base">
-                <ChangeSentence direction={direction} percent={percent} />
+                <ChangeSentence direction={direction} amount={amount} />
               </p>
             </div>
           </div>
@@ -257,7 +262,7 @@ const ProductDetailsContent = async ({
             </h2>
 
             <div className="hidden overflow-x-auto rounded-xl border border-gray-200 md:block">
-              <table className="w-full text-left">
+              <table className="w-full border-collapse text-left">
                 <thead>
                   <tr className="border-b border-gray-200 text-gray-500">
                     <th className="px-5 py-3 font-medium">বাজার</th>
@@ -268,21 +273,24 @@ const ProductDetailsContent = async ({
                   </tr>
                 </thead>
                 <tbody>
-                  {marketRows.map((row) => (
+                  {marketRows.map((row, index) => {
+                    const cell = index === marketRows.length - 1 ? "" : "border border-black ";
+                    return (
                     <tr key={row.market} className="even:bg-[#F3F7F3]">
-                      <td className="px-5 py-3 text-gray-900">{row.market}</td>
-                      <td className="px-5 py-3 text-gray-500">{row.division}</td>
-                      <td className="px-5 py-3 text-right font-notosans text-gray-700">
+                      <td className={`${cell}px-5 py-3 text-gray-900`}>{row.market}</td>
+                      <td className={`${cell}px-5 py-3 text-gray-500`}>{row.division}</td>
+                      <td className={`${cell}px-5 py-3 text-right font-notosans text-gray-700`}>
                         {toBanglaPrice(row.min)} টাকা
                       </td>
-                      <td className="px-5 py-3 text-right font-notosans text-gray-700">
+                      <td className={`${cell}px-5 py-3 text-right font-notosans text-gray-700`}>
                         {toBanglaPrice(row.max)} টাকা
                       </td>
-                      <td className="px-5 py-3 text-right font-notosans font-bold text-gray-900">
+                      <td className={`${cell}px-5 py-3 text-right font-notosans font-bold text-gray-900`}>
                         {toBanglaPrice(row.average)} টাকা
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

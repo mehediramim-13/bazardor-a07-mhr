@@ -31,8 +31,8 @@ const SORT_OPTIONS = [
 ];
 
 const CHANGE_STYLES = {
-  up: { arrow: "▲", colors: "bg-red-50 text-red-700" },
-  down: { arrow: "▼", colors: "bg-green-50 text-green-700" },
+  up:   { arrow: "▲", colors: "bg-green-50 text-green-700" },
+down: { arrow: "▼", colors: "bg-red-50 text-red-700" },
   flat: { arrow: "—", colors: "bg-gray-100 text-gray-600" },
 };
 
