@@ -60,7 +60,8 @@ const getProduct = async (id: string): Promise<ProductDetails | null> => {
   cacheLife("hours");
 
   const response = await fetch(
-    `https://api.abcz.workers.dev/api/bazardor/products/${encodeURIComponent(id)}`
+    `https://api.abcz.workers.dev/api/bazardor/products/${encodeURIComponent(id)}`,
+    { signal: AbortSignal.timeout(8000) }
   );
 
   if (response.status === 404) return null;
@@ -102,10 +103,10 @@ const SummaryCard = ({
   note: string;
   priceColor: string;
 }) => (
-  <div className="rounded-2xl border border-gray-200 bg-[#FAFCFA] px-6 py-4">
+  <div className="rounded-2xl border border-gray-200 bg-[#FAFCFA] px-4 py-3 sm:px-6 sm:py-4">
     <p className="text-sm text-gray-500">{label}</p>
     <p className={`mt-1 font-notosans ${priceColor}`}>
-      <span className="text-3xl font-bold">{toBanglaPrice(price)}</span> টাকা
+      <span className="text-2xl font-bold sm:text-3xl">{toBanglaPrice(price)}</span> টাকা
     </p>
     <p className="mt-1 text-sm text-gray-500">{note}</p>
   </div>
@@ -117,7 +118,35 @@ const ProductDetailsContent = async ({
   params: Promise<{ id: string }>;
 }) => {
   const { id } = await params;
-  const product = await getProduct(id);
+
+  let product: ProductDetails | null;
+
+  try {
+    product = await getProduct(id);
+  } catch (error) {
+    console.error("ProductDetails:", error);
+    return (
+      <div className="container mx-auto px-4 py-8 sm:py-10">
+        <div className="mx-auto flex max-w-lg flex-col items-center rounded-2xl border border-gray-200 bg-[#FAFCFA] px-4 py-8 text-center sm:px-6 sm:py-10">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-xl sm:h-14 sm:w-14 sm:text-2xl">
+            ⚠️
+          </div>
+          <h1 className="mt-4 text-base font-bold text-gray-900 sm:text-lg">
+            তথ্য লোড করা যায়নি
+          </h1>
+          <p className="mt-1 max-w-sm text-sm text-gray-500">
+            সার্ভার থেকে পণ্যের তথ্য আনতে সমস্যা হচ্ছে। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।
+          </p>
+          <Link
+            href="/"
+            className="mt-5 rounded-xl bg-green-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700"
+          >
+            হোমে ফিরে যান
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) notFound();
 
@@ -132,9 +161,10 @@ const ProductDetailsContent = async ({
 
   const unitLabel = UNIT_LABELS[product.unit] ?? product.unit;
   const markets = product.markets ?? [];
+  const hasMarkets = markets.length > 0;
 
-  const lowestPrice = Math.min(...markets.map((market) => market.min));
-  const highestPrice = Math.max(...markets.map((market) => market.max));
+  const lowestPrice = hasMarkets ? Math.min(...markets.map((market) => market.min)) : 0;
+  const highestPrice = hasMarkets ? Math.max(...markets.map((market) => market.max)) : 0;
   const averagePrice = getAveragePrice(lowestPrice, highestPrice);
 
   const marketRows = markets
@@ -145,8 +175,8 @@ const ProductDetailsContent = async ({
     .sort((a, b) => a.average - b.average);
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <nav className="mb-6 flex items-center gap-2 text-gray-600">
+    <div className="container mx-auto px-4 py-5 sm:py-6">
+      <nav className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-600 sm:mb-6 sm:text-base">
         <Link href="/" className="hover:text-green-700">
           হোম
         </Link>
@@ -158,31 +188,33 @@ const ProductDetailsContent = async ({
         <span className="text-gray-900">{product.nameBn}</span>
       </nav>
 
-      <section className="rounded-2xl border border-gray-200 bg-[#FAFCFA] p-6">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-5">
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-gray-100 text-5xl">
+      <section className="rounded-2xl border border-gray-200 bg-[#FAFCFA] p-4 sm:p-6">
+        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between md:gap-6">
+          <div className="flex items-center gap-4 sm:gap-5">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gray-100 text-3xl sm:h-24 sm:w-24 sm:text-5xl">
               {product.image}
             </div>
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900">{product.nameBn}</h1>
-              <p className="text-gray-500">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold leading-tight text-gray-900 sm:text-3xl md:text-4xl">
+                {product.nameBn}
+              </h1>
+              <p className="mt-1 text-sm text-gray-500 sm:text-base">
                 প্রতি {unitLabel} · {product.categoryNameBn}
               </p>
-              <p className="mt-2 text-gray-600">
+              <p className="mt-2 text-sm text-gray-600 sm:text-base">
                 <ChangeSentence direction={direction} percent={percent} />
               </p>
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gray-100 px-8 py-4 text-center">
+          <div className="w-full rounded-2xl bg-gray-100 px-6 py-4 text-center md:w-auto md:shrink-0 md:px-8">
             <p className="text-gray-600">আজকের দাম</p>
-            <p className="font-notosans text-5xl font-bold text-gray-900">
+            <p className="font-notosans text-4xl font-bold text-gray-900 sm:text-5xl">
               {toBanglaNumber(product.today)}
             </p>
             <p className="text-gray-600">টাকা / {unitLabel}</p>
             <p
-              className={`mt-1 inline-flex items-center gap-1.5 text-[17px] font-semibold font-[family-name:var(--font-noto-bengali)] ${changeStyle.colors}`}
+              className={`mt-1 inline-flex items-center gap-1.5 text-base font-semibold font-[family-name:var(--font-noto-bengali)] sm:text-[17px] ${changeStyle.colors}`}
             >
               <span className="text-[10px]">{changeStyle.arrow}</span>
               {toBanglaPercent(percent)}%
@@ -191,69 +223,113 @@ const ProductDetailsContent = async ({
         </div>
       </section>
 
-      <section className="mt-6 rounded-2xl border border-gray-200 bg-[#FAFCFA] p-6">
-        <h2 className="text-2xl font-bold text-gray-900">দামের সারসংক্ষেপ</h2>
+      <section className="mt-4 rounded-2xl border border-gray-200 bg-[#FAFCFA] p-4 sm:mt-6 sm:p-6">
+        {hasMarkets ? (
+          <>
+            <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">দামের সারসংক্ষেপ</h2>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-          <SummaryCard
-            label="সর্বনিম্ন দাম"
-            price={lowestPrice}
-            note="সবচেয়ে কম দামের বাজার"
-            priceColor="text-green-700"
-          />
-          <SummaryCard
-            label="সর্বাধিক দাম"
-            price={highestPrice}
-            note="সবচেয়ে বেশি দামের বাজার"
-            priceColor="text-red-600"
-          />
-          <SummaryCard
-            label="গড় দাম"
-            price={averagePrice}
-            note={`প্রতি ${unitLabel}-এর হিসাবে`}
-            priceColor="text-green-700"
-          />
-        </div>
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:mt-4 sm:gap-4 md:grid-cols-3">
+              <SummaryCard
+                label="সর্বনিম্ন দাম"
+                price={lowestPrice}
+                note="সবচেয়ে কম দামের বাজার"
+                priceColor="text-green-700"
+              />
+              <SummaryCard
+                label="সর্বাধিক দাম"
+                price={highestPrice}
+                note="সবচেয়ে বেশি দামের বাজার"
+                priceColor="text-red-600"
+              />
+              <SummaryCard
+                label="গড় দাম"
+                price={averagePrice}
+                note={`প্রতি ${unitLabel}-এর হিসাবে`}
+                priceColor="text-green-700"
+              />
+            </div>
 
-        <h2 className="mb-4 mt-8 text-2xl font-bold text-gray-900">
-          বাজারভিত্তিক আজকের দাম
-        </h2>
+            <h2 className="mb-3 mt-6 text-xl font-bold text-gray-900 sm:mb-4 sm:mt-8 sm:text-2xl">
+              বাজারভিত্তিক আজকের দাম
+            </h2>
 
-        <div className="overflow-x-auto rounded-xl border border-gray-200">
-          <table className="w-full min-w-[640px] text-left">
-            <thead>
-              <tr className="border-b border-gray-200 text-gray-500">
-                <th className="px-5 py-3 font-medium">বাজার</th>
-                <th className="px-5 py-3 font-medium">বিভাগ</th>
-                <th className="px-5 py-3 text-right font-medium">সর্বনিম্ন</th>
-                <th className="px-5 py-3 text-right font-medium">সর্বাধিক</th>
-                <th className="px-5 py-3 text-right font-medium">গড়</th>
-              </tr>
-            </thead>
-            <tbody>
+            <div className="hidden overflow-x-auto rounded-xl border border-gray-200 md:block">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-gray-200 text-gray-500">
+                    <th className="px-5 py-3 font-medium">বাজার</th>
+                    <th className="px-5 py-3 font-medium">বিভাগ</th>
+                    <th className="px-5 py-3 text-right font-medium">সর্বনিম্ন</th>
+                    <th className="px-5 py-3 text-right font-medium">সর্বাধিক</th>
+                    <th className="px-5 py-3 text-right font-medium">গড়</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {marketRows.map((row) => (
+                    <tr key={row.market} className="even:bg-[#F3F7F3]">
+                      <td className="px-5 py-3 text-gray-900">{row.market}</td>
+                      <td className="px-5 py-3 text-gray-500">{row.division}</td>
+                      <td className="px-5 py-3 text-right font-notosans text-gray-700">
+                        {toBanglaPrice(row.min)} টাকা
+                      </td>
+                      <td className="px-5 py-3 text-right font-notosans text-gray-700">
+                        {toBanglaPrice(row.max)} টাকা
+                      </td>
+                      <td className="px-5 py-3 text-right font-notosans font-bold text-gray-900">
+                        {toBanglaPrice(row.average)} টাকা
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <ul className="flex flex-col gap-3 md:hidden">
               {marketRows.map((row) => (
-                <tr key={row.market} className="even:bg-[#F3F7F3]">
-                  <td className="px-5 py-3 text-gray-900">{row.market}</td>
-                  <td className="px-5 py-3 text-gray-500">{row.division}</td>
-                  <td className="px-5 py-3 text-right font-notosans text-gray-700">
-                    {toBanglaPrice(row.min)} টাকা
-                  </td>
-                  <td className="px-5 py-3 text-right font-notosans text-gray-700">
-                    {toBanglaPrice(row.max)} টাকা
-                  </td>
-                  <td className="px-5 py-3 text-right font-notosans font-bold text-gray-900">
-                    {toBanglaPrice(row.average)} টাকা
-                  </td>
-                </tr>
+                <li
+                  key={row.market}
+                  className="rounded-xl border border-gray-200 bg-white p-3.5"
+                >
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="min-w-0 truncate font-semibold text-gray-900">
+                      {row.market}
+                    </p>
+                    <p className="shrink-0 text-xs text-gray-500">{row.division}</p>
+                  </div>
+                  <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-lg bg-gray-50 px-1 py-2">
+                      <p className="text-xs text-gray-500">সর্বনিম্ন</p>
+                      <p className="mt-0.5 font-notosans text-sm text-gray-700">
+                        {toBanglaPrice(row.min)}
+                      </p>
+                    </div>
+                    <div className="rounded-lg bg-gray-50 px-1 py-2">
+                      <p className="text-xs text-gray-500">সর্বাধিক</p>
+                      <p className="mt-0.5 font-notosans text-sm text-gray-700">
+                        {toBanglaPrice(row.max)}
+                      </p>
+                    </div>
+                    <div className="rounded-lg bg-green-50 px-1 py-2">
+                      <p className="text-xs text-gray-500">গড়</p>
+                      <p className="mt-0.5 font-notosans text-sm font-bold text-gray-900">
+                        {toBanglaPrice(row.average)}
+                      </p>
+                    </div>
+                  </div>
+                </li>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </ul>
+          </>
+        ) : (
+          <p className="py-6 text-center text-gray-500">
+            এই পণ্যের বাজারভিত্তিক দাম এখনো পাওয়া যায়নি।
+          </p>
+        )}
       </section>
 
       <Link
         href={`/category/${product.category}`}
-        className="mt-6 inline-flex items-center gap-2 font-semibold text-gray-900 hover:text-green-700"
+        className="mt-5 inline-flex items-center gap-2 font-semibold text-gray-900 hover:text-green-700 sm:mt-6"
       >
         <span>{product.categoryIcon}</span>
         সব {product.categoryNameBn}

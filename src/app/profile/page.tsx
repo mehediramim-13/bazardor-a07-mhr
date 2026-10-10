@@ -10,7 +10,7 @@ import { UserAvatar } from "../components/UserMenu";
 const ProfilePage = () => {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
-  const [name, setName] = useState("");
+  const [name, setName] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -18,10 +18,6 @@ const ProfilePage = () => {
       router.replace("/signin");
     }
   }, [isPending, session, router]);
-
-  useEffect(() => {
-    if (session?.user?.name) setName(session.user.name);
-  }, [session?.user?.name]);
 
   const handleSignOut = async () => {
     await authClient.signOut({
@@ -40,7 +36,7 @@ const ProfilePage = () => {
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newName = name.trim();
+    const newName = (name ?? session?.user?.name ?? "").trim();
 
     if (!newName) {
       toast.error("নাম খালি রাখা যাবে না।");
@@ -61,63 +57,67 @@ const ProfilePage = () => {
       return;
     }
 
+    setName(null);
     toast.success("নাম সফলভাবে পরিবর্তন হয়েছে।");
     router.refresh();
   };
 
   if (isPending || !session?.user) {
     return (
-      <div className="container mx-auto px-4 py-10">
-        <div className="mx-auto max-w-[920px] space-y-6">
+      <div className="container mx-auto px-4 py-6 sm:py-10">
+        <div className="mx-auto max-w-[920px] space-y-4 sm:space-y-6">
           <div className="h-24 animate-pulse rounded-2xl bg-gray-200" />
-          <div className="h-64 animate-pulse rounded-2xl bg-gray-200" />
+          <div className="h-56 animate-pulse rounded-2xl bg-gray-200 sm:h-64" />
         </div>
       </div>
     );
   }
 
   const { user } = session;
+  const inputValue = name ?? user.name ?? "";
 
   return (
-    <div className="container mx-auto px-4 py-10">
+    <div className="container mx-auto px-4 py-6 sm:py-10">
       <div className="mx-auto w-full max-w-[920px]">
-        <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+        <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl">
           আমার প্রোফাইল
         </h1>
-        <p className="mt-1 text-gray-600">
+        <p className="mt-1 text-sm text-gray-600 sm:text-base">
           আপনার অ্যাকাউন্টের তথ্য এখানে দেখুন।
         </p>
 
-        <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-base-100 p-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
+        <div className="mt-5 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-base-100 p-4 sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex min-w-0 items-center gap-3 sm:gap-4">
             <UserAvatar name={user.name} image={user.image} size="lg" />
             <div className="min-w-0">
-              <p className="truncate text-xl font-semibold text-gray-900">
+              <p className="truncate text-lg font-semibold text-gray-900 sm:text-xl">
                 {user.name}
               </p>
-              <p className="truncate text-gray-600">{user.email}</p>
+              <p className="truncate text-sm text-gray-600 sm:text-base">
+                {user.email}
+              </p>
             </div>
           </div>
 
           <button
             type="button"
             onClick={handleSignOut}
-            className="flex items-center justify-center gap-2 rounded-lg border border-red-500 bg-white px-5 py-2.5 font-medium text-red-600 transition hover:bg-red-50"
+            className="flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg border border-red-500 bg-white px-5 py-2.5 font-medium text-red-600 transition hover:bg-red-50 sm:w-auto"
           >
             <IoArrowUndo />
             সাইন আউট
           </button>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-gray-200 bg-base-100 p-6">
-          <h2 className="text-xl font-bold text-gray-900">
+        <div className="mt-4 rounded-2xl border border-gray-200 bg-base-100 p-4 sm:mt-6 sm:p-6">
+          <h2 className="text-lg font-bold text-gray-900 sm:text-xl">
             নাম হালনাগাদ করুন
           </h2>
 
           <form onSubmit={handleUpdate} className="mt-4">
             <label
               htmlFor="name"
-              className="mb-1 block text-base font-medium text-gray-900"
+              className="mb-1 block text-sm font-medium text-gray-900 sm:text-base"
             >
               নাম
             </label>
@@ -125,7 +125,7 @@ const ProfilePage = () => {
               id="name"
               name="name"
               type="text"
-              value={name}
+              value={inputValue}
               onChange={(e) => setName(e.target.value)}
               required
               autoComplete="name"
@@ -136,7 +136,7 @@ const ProfilePage = () => {
             <button
               type="submit"
               disabled={saving}
-              className="mt-4 rounded-lg bg-[#05893E] px-5 py-2.5 text-base font-semibold text-white shadow-md transition hover:bg-green-800 disabled:opacity-60"
+              className="mt-4 w-full cursor-pointer rounded-lg bg-[#05893E] px-5 py-2.5 text-base font-semibold text-white shadow-md transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
               {saving ? "অপেক্ষা করুন..." : "নাম হালনাগাদ করুন"}
             </button>
