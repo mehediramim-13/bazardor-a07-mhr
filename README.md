@@ -1,8 +1,8 @@
 # বাজার দর (BazarDor)
 
-Live site: https://bazardor-a07-mhr.vercel.app
+**Live site:** https://bazardor-a07-mhr.vercel.app
 
-GitHub repo: https://github.com/mehediramim-13/bazardor-a07-mhr.git
+**GitHub repo:** https://github.com/mehediramim-13/bazardor-a07-mhr.git
 
 ## About the project
 
@@ -45,7 +45,7 @@ The whole site is written in Bangla and works on mobile, tablet and desktop.
 | --- | --- | --- |
 | `/` | Home page with hero, price up, price down and all products | No |
 | `/category/[slug]` | Products of one category | No |
-| `/product-details/[id]` | Full price details of one product | Yes |
+| `/product/[slug]` | Full price details of one product | Yes |
 | `/signin` | Sign in | No |
 | `/signup` | Sign up | No |
 | `/profile` | User profile | Yes |
@@ -56,44 +56,44 @@ The whole site is written in Bangla and works on mobile, tablet and desktop.
 1. Clone the repo and go inside the folder.
 
 ```bash
-git clone <your-repo-link>
-cd <project-folder>
+   git clone https://github.com/mehediramim-13/bazardor-a07-mhr.git
+   cd bazardor-a07-mhr
 ```
 
 2. Install the packages.
 
 ```bash
-npm install
+   npm install
 ```
 
 3. Create a `.env.local` file in the root folder and add these values.
 
 ```env
-MONGODB_URL=your_mongodb_connection_string
-BETTER_AUTH_URL=http://localhost:3000
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GITHUB_CLIENT_ID=your_github_client_id
-GITHUB_CLIENT_SECRET=your_github_client_secret
+   MONGODB_URL=your_mongodb_connection_string
+   BETTER_AUTH_URL=http://localhost:3000
+   NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   GITHUB_CLIENT_ID=your_github_client_id
+   GITHUB_CLIENT_SECRET=your_github_client_secret
 ```
 
 4. Start the dev server.
 
 ```bash
-npm run dev
+   npm run dev
 ```
 
 5. Open http://localhost:3000 in your browser.
 
 ## Folder overview
 
-```
+```text
 src/
   app/
     components/     navbar, hero, footer, ticker, product cards
     category/       category pages
-    product-details/ product details page
+    product/        product details page
     signin/ signup/ auth pages
     profile/        profile and update name pages
     api/auth/       Better Auth route
