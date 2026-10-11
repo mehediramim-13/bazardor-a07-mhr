@@ -20,7 +20,6 @@ interface ProductDetails {
   unit: string;
   image: string;
   today: number;
-  yesterday?: number;
   change: { dir: string; pct: number };
   markets: Market[];
 }
@@ -36,18 +35,15 @@ const UNIT_LABELS: Record<string, string> = {
 };
 
 const CHANGE_STYLES = {
-up:   { arrow: "▲", colors: "bg-green-50 text-green-700" },
-down: { arrow: "▼", colors: "bg-red-50 text-red-700" },
+  up: { arrow: "▲", colors: "bg-green-50 text-green-700" },
+  down: { arrow: "▼", colors: "bg-red-50 text-red-700" },
   flat: { arrow: "—", colors: "text-gray-600" },
 };
 
 const toBanglaNumber = (value: number) => Number(value).toLocaleString("bn-BD");
 
 const toBanglaPrice = (value: number) =>
-  Number(value).toLocaleString("bn-BD", {
-    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
-    maximumFractionDigits: 2,
-  });
+  Math.round(Number(value)).toLocaleString("bn-BD");
 
 const toBanglaPercent = (value: number) =>
   Number(value).toLocaleString("bn-BD", {
@@ -57,12 +53,12 @@ const toBanglaPercent = (value: number) =>
 
 const getAveragePrice = (lowest: number, highest: number) => (lowest + highest) / 2;
 
-const getProduct = async (id: string): Promise<ProductDetails | null> => {
+const getProduct = async (slug: string): Promise<ProductDetails | null> => {
   "use cache";
   cacheLife("hours");
 
   const response = await fetch(
-    `https://api.abcz.workers.dev/api/bazardor/products/${encodeURIComponent(id)}`,
+    `https://api.abcz.workers.dev/api/bazardor/products/${encodeURIComponent(slug)}`,
     { signal: AbortSignal.timeout(8000) }
   );
 
@@ -72,12 +68,12 @@ const getProduct = async (id: string): Promise<ProductDetails | null> => {
   return response.json();
 };
 
-const ChangeSentence = ({ direction, amount }: { direction: string; amount: number }) => {
+const ChangeSentence = ({ direction, percent }: { direction: string; percent: number }) => {
   if (direction === "up") {
     return (
       <>
-        গতকালের তুলনায় আজ দাম <strong className="text-gray-900">বেড়েছে</strong> ·{" "}
-        <span className="font-notosans">{toBanglaNumber(amount)}</span> টাকা
+        গতকালের তুলনায় আজ দাম <strong className="text-gray-900">বেড়েছে</strong>{" "}
+        <span className="font-notosans">{toBanglaPercent(percent)}%</span>
       </>
     );
   }
@@ -85,8 +81,8 @@ const ChangeSentence = ({ direction, amount }: { direction: string; amount: numb
   if (direction === "down") {
     return (
       <>
-        গতকালের তুলনায় আজ দাম <strong className="text-gray-900">কমেছে</strong> ·{" "}
-        <span className="font-notosans">{toBanglaNumber(amount)}</span> টাকা
+        গতকালের তুলনায় আজ দাম <strong className="text-gray-900">কমেছে</strong>{" "}
+        <span className="font-notosans">{toBanglaPercent(percent)}%</span>
       </>
     );
   }
@@ -117,14 +113,14 @@ const SummaryCard = ({
 const ProductDetailsContent = async ({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) => {
-  const { id } = await params;
+  const { slug } = await params;
 
   let product: ProductDetails | null;
 
   try {
-    product = await getProduct(id);
+    product = await getProduct(slug);
   } catch (error) {
     console.error("ProductDetails:", error);
     return (
@@ -154,10 +150,6 @@ const ProductDetailsContent = async ({
 
   const direction = product.change?.dir ?? "flat";
   const percent = Math.abs(product.change?.pct ?? 0);
-  const amount =
-    typeof product.yesterday === "number"
-      ? Math.abs(product.today - product.yesterday)
-      : 0;
   const changeStyle =
     direction === "up"
       ? CHANGE_STYLES.up
@@ -204,13 +196,11 @@ const ProductDetailsContent = async ({
               <h1 className="text-2xl font-bold leading-tight text-gray-900 sm:text-3xl md:text-4xl">
                 {product.nameBn}
               </h1>
-              <div className="mt-1.5">
-                <p className="text-sm text-gray-500 sm:text-base">
-                  প্রতি {unitLabel} · {product.categoryNameBn}
-                </p>
-              </div>
+              <p className="mt-1 text-sm text-gray-500 sm:text-base">
+                প্রতি {unitLabel} · {product.categoryNameBn}
+              </p>
               <p className="mt-2 text-sm text-gray-600 sm:text-base">
-                <ChangeSentence direction={direction} amount={amount} />
+                <ChangeSentence direction={direction} percent={percent} />
               </p>
             </div>
           </div>
@@ -276,19 +266,19 @@ const ProductDetailsContent = async ({
                   {marketRows.map((row, index) => {
                     const cell = index === marketRows.length - 1 ? "" : "border border-black ";
                     return (
-                    <tr key={row.market} className="even:bg-[#F3F7F3]">
-                      <td className={`${cell}px-5 py-3 text-gray-900`}>{row.market}</td>
-                      <td className={`${cell}px-5 py-3 text-gray-500`}>{row.division}</td>
-                      <td className={`${cell}px-5 py-3 text-right font-notosans text-gray-700`}>
-                        {toBanglaPrice(row.min)} টাকা
-                      </td>
-                      <td className={`${cell}px-5 py-3 text-right font-notosans text-gray-700`}>
-                        {toBanglaPrice(row.max)} টাকা
-                      </td>
-                      <td className={`${cell}px-5 py-3 text-right font-notosans font-bold text-gray-900`}>
-                        {toBanglaPrice(row.average)} টাকা
-                      </td>
-                    </tr>
+                      <tr key={row.market} className="even:bg-[#F3F7F3]">
+                        <td className={`${cell}px-5 py-3 text-gray-900`}>{row.market}</td>
+                        <td className={`${cell}px-5 py-3 text-gray-500`}>{row.division}</td>
+                        <td className={`${cell}px-5 py-3 text-right font-notosans text-gray-700`}>
+                          {toBanglaPrice(row.min)} টাকা
+                        </td>
+                        <td className={`${cell}px-5 py-3 text-right font-notosans text-gray-700`}>
+                          {toBanglaPrice(row.max)} টাকা
+                        </td>
+                        <td className={`${cell}px-5 py-3 text-right font-notosans font-bold text-gray-900`}>
+                          {toBanglaPrice(row.average)} টাকা
+                        </td>
+                      </tr>
                     );
                   })}
                 </tbody>
@@ -349,7 +339,7 @@ const ProductDetailsContent = async ({
   );
 };
 
-const ProductDetailsPage = ({ params }: { params: Promise<{ id: string }> }) => {
+const ProductDetailsPage = ({ params }: { params: Promise<{ slug: string }> }) => {
   return (
     <Suspense fallback={<PageLoader />}>
       <ProductDetailsContent params={params} />

@@ -37,7 +37,7 @@ const SignInPage = () => {
     const redirectTarget = getRedirectTarget();
     if (!redirectTarget) return;
 
-    const isDetailsPage = redirectTarget.startsWith("/product-details");
+    const isDetailsPage = redirectTarget.startsWith("/product/");
 
     toast(
       isDetailsPage

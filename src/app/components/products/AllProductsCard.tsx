@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { FaChevronDown } from "react-icons/fa";
 
 export interface Product {
   id: number;
@@ -31,8 +32,8 @@ const SORT_OPTIONS = [
 ];
 
 const CHANGE_STYLES = {
-  up:   { arrow: "▲", colors: "bg-green-50 text-green-700" },
-down: { arrow: "▼", colors: "bg-red-50 text-red-700" },
+  up: { arrow: "▲", colors: "bg-green-50 text-green-700" },
+  down: { arrow: "▼", colors: "bg-red-50 text-red-700" },
   flat: { arrow: "—", colors: "bg-gray-100 text-gray-600" },
 };
 
@@ -114,17 +115,20 @@ const AllProducts = ({
 
         <label className="flex items-center justify-between gap-2 text-sm text-gray-600 sm:justify-start sm:text-base">
           সাজান
-          <select
-            value={sortBy}
-            onChange={(event) => setSortBy(event.target.value)}
-            className="min-w-0 flex-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 outline-none focus:border-green-600 sm:flex-none"
-          >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <span className="relative min-w-0 flex-1 sm:flex-none">
+            <select
+              value={sortBy}
+              onChange={(event) => setSortBy(event.target.value)}
+              className="w-full appearance-none rounded-lg border border-gray-300 bg-white py-1.5 pl-3 pr-9 text-sm text-gray-900 outline-none focus:border-green-600"
+            >
+              {SORT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <FaChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500" />
+          </span>
         </label>
       </div>
 
@@ -132,7 +136,7 @@ const AllProducts = ({
         {sortedProducts.map((product) => (
           <Link
             key={product.id}
-            href={`/product-details/${product.id}`}
+            href={`/product/${product.id}`}
             className="block rounded-2xl border border-gray-200 bg-[#FAFCFA] p-3.5 transition hover:border-green-600 hover:shadow-md sm:p-4"
           >
             <div className="flex items-center gap-3">

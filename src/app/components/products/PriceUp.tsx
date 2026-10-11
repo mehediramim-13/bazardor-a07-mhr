@@ -82,7 +82,7 @@ const PriceUp = async () => {
         {risenProducts.map((product) => (
           <Link
             key={product.id}
-            href={`/product-details/${product.id}`}
+            href={`/product/${product.id}`}
             className="block rounded-2xl border border-gray-200 bg-[#FAFCFA] p-3.5 transition hover:border-green-600 hover:shadow-md sm:p-4"
           >
             <div className="flex items-center gap-3">

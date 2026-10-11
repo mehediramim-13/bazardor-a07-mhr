@@ -37,11 +37,11 @@ const splitName = (name: string): [string, string] => {
 const pickTickerProducts = (products: Product[]) => {
   const risenProducts = products
     .filter((product) => product.change?.dir === "up")
-    .sort((a, b) => b.change.pct - a.change.pct);
+    .sort((a, b) => Math.abs(b.change.pct) - Math.abs(a.change.pct));
 
   const fallenProducts = products
     .filter((product) => product.change?.dir === "down")
-    .sort((a, b) => a.change.pct - b.change.pct);
+    .sort((a, b) => Math.abs(b.change.pct) - Math.abs(a.change.pct));
 
   let pickedProducts = [...risenProducts.slice(0, 6), ...fallenProducts.slice(0, 6)];
 
@@ -106,7 +106,7 @@ const Marquee = async () => {
               </span>
               <span
                 className={`text-xs font-medium sm:text-sm ${
-                  isPriceUp ? "text-red-600" : "text-green-600"
+                  isPriceUp ? "text-green-600" : "text-red-600"
                 }`}
               >
                 {isPriceUp ? "▲" : "▼"}{" "}
